@@ -13,24 +13,41 @@ public class GameManager : MonoBehaviour
     public bool gameAlive = false; // Is the game currently running
     public int[] colorKey = new int[4]; // Key to win the game
     public int[] userKey = new int[4]; // Key the player is guessing
-    private int numCorrectColor; // Number of colors guesses correctly that are currently inside of the key
-    private int numCorrectOrder; // Number of colors guesses that are both the same color and the right position
+    public int numCorrectColor; // Number of colors guesses correctly that are currently inside of the key
+    public int numCorrectOrder; // Number of colors guesses that are both the same color and the right position
     private int numToWin = Constants.Normal;
     public bool gameWon;
     public double posKeyInput;
     public GameObject keyOptionsPanel;
+    public int boxNumberEnterring; // Number of the blank box user is inputting into
+    public int colorKeyNumberEnterring; // Number of the color user is inputting into blank box
+    public Material blankMaterial;
 
+    GameObject inputBox0;
+    GameObject inputBox1;
+    GameObject inputBox2;
+    GameObject inputBox3;
+    
     // Start is called before the first frame update
     void Start()
     {
-        
+        inputBox0 = GameObject.Find($"Box0");
+        inputBox1 = GameObject.Find($"Box1");
+        inputBox2 = GameObject.Find($"Box2");
+        inputBox3 = GameObject.Find($"Box3");
     }
 
     // Update is called once per frame
     void Update()
     {
         startGame();
-        gameLogic(); 
+        enterKeys();
+ 
+        /*if()
+        {
+            gameLogic();
+        }
+        */
     }
 
     void startGame()
@@ -44,48 +61,66 @@ public class GameManager : MonoBehaviour
             for (i = 0; i < colorKey.Length; i++)
             {
                 colorKey[i] = Random.Range(0, 4); // Every number will represent a color
-                Debug.Log("Color key is: " + colorKey[i]);
             }
+
+            print("Your color key is: " + colorKey[0] + colorKey[1] + colorKey[2] + colorKey[3]);
         }
     }
 
-    void gameLogic()
+    public void gameLogic()
     {
+        inputBox0.GetComponent<SpriteRenderer>().material = blankMaterial;
+        inputBox1.GetComponent<SpriteRenderer>().material = blankMaterial;
+        inputBox2.GetComponent<SpriteRenderer>().material = blankMaterial;
+        inputBox3.GetComponent<SpriteRenderer>().material = blankMaterial;
+
+        print("User key is: " + userKey[0] + userKey[1] + userKey[2] + userKey[3]);
+
         int i;
         int j;
 
-        int[] initialKey = colorKey;
+        int[] initialKey = new int[4];
 
-        if(gameAlive)
+        if (gameAlive)
         {
+            numCorrectColor = 0;
+            numCorrectOrder = 0;
+
+            for(i = 0; i < colorKey.Length; i++)
+            {
+               initialKey[i] = colorKey[i];
+            }
+
+            for (j = 0; j < colorKey.Length; j++) // Checking if these colors are in correct place
+            {
+                if (userKey[j] == colorKey[j])
+                {
+                    numCorrectOrder++;
+                }
+            }
+
             for (i = 0; i < colorKey.Length; i++) // Checking if there is any correct color on any of the boxes
             {
                 for (j = 0; j < colorKey.Length; j++)
                 {
-                    if (userKey[j] == colorKey[i])
+                    if (userKey[j] == initialKey[i])
                     {
-                        colorKey[i] = 5;
+                        initialKey[i] = 5;
                         numCorrectColor++;
                     }
                 }
             }
 
-            for (j = 0; i < colorKey.Length; i++) // Checking if these colors are in correct place
+            if (numCorrectOrder == numToWin)
             {
-                if (colorKey[j] == colorKey[j])
-                {
-                    numCorrectOrder++;
-                }
+                gameAlive = false;
+                gameWon = true;
             }
         }
 
-        colorKey = initialKey;
+        
 
-        if(numCorrectOrder == numToWin)
-        {
-            gameAlive = false;
-            gameWon = true;
-        }
+       
     }
 
     void gameMessage()
@@ -95,19 +130,8 @@ public class GameManager : MonoBehaviour
 
     void enterKeys()
     {
-        // Move key options panel by 165 units for next option on canvas, left most option at -250
-        // Every option will have 
+        userKey[boxNumberEnterring] = colorKeyNumberEnterring;
 
-        keyOptionsPanel.transform.position = new Vector2((float)posKeyInput, keyOptionsPanel.transform.position.y);
-
-        double i;
-
-        for (i = 0; i < 1; i = i + .05)
-        {
-            keyOptionsPanel.transform.localScale = new Vector2((float) i, (float) i);
-        }
-
+        
     }  
-
-    
 }

@@ -8,11 +8,12 @@ TagManager:
   - Box1
   - Box2
   - Box3
+  - HistoryPanel
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - BackgroundImage
   - Water
   - UI
   - 

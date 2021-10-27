@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     public int colorKeyNumberEnterring; // Number of the color user is inputting into blank box
     public Material blankMaterial;
     public List<int> numDifColors = new List<int>(); // Number of different colors inside original key
-    private List<int> correctUniqueColor= new List<int>();
+    public List<int> correctUniqueColor= new List<int>();
 
     public TMP_Text introText;
     public TMP_Text gameText;
@@ -96,6 +96,11 @@ public class GameManager : MonoBehaviour
                 }
             }
 
+            while (numDifColors.Count < Constants.Normal)
+            {
+                numDifColors.Add(-1); // -1 is just a filler to make sure the list size is the same size as the box amounts
+            }
+
             print("Your color key is: " + colorKey[0] + colorKey[1] + colorKey[2] + colorKey[3]);
         }
     }
@@ -133,7 +138,7 @@ public class GameManager : MonoBehaviour
                 {
                     correctUniqueColor.Add(userKey[i]);
                 }
-            }
+            }    
 
             IEnumerable<int> res = numDifColors.AsQueryable().Intersect(correctUniqueColor);
 
@@ -141,6 +146,8 @@ public class GameManager : MonoBehaviour
             {
                 numCorrectColor++;
             }
+
+            correctUniqueColor.Clear();
 
             while (numCorrectColor> numDifColors.Count)
             {
@@ -188,8 +195,6 @@ public class GameManager : MonoBehaviour
                 initialKey[i] = colorKey[i];
             }
         }
-
-        
     }
 
     IEnumerator displayText()

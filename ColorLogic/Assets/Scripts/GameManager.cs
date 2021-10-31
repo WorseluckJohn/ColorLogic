@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 static class Constants
 {
@@ -26,14 +27,20 @@ public class GameManager : MonoBehaviour
     public Material blankMaterial;
     public List<int> numDifColors = new List<int>(); // Number of different colors inside original key
     public List<int> correctUniqueColor= new List<int>();
+    public int attempts; // Number of attempts done by the user
+    public GameObject restartButton;
+    public int attemptsAllowed = 5; // Attempts allowed by user
 
     public TMP_Text introText;
     public TMP_Text gameText;
 
-    GameObject inputBox0;
+    public ParticleSystem fireworkSystem;
+
+    /*GameObject inputBox0;
     GameObject inputBox1;
     GameObject inputBox2;
     GameObject inputBox3;
+    */
 
     private GameObject[] inputBoxesHistory = new GameObject[4];
     private GameObject[] inputBoxes = new GameObject[4];
@@ -44,20 +51,15 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        int i;
-
-        for (i = 0; i < Constants.Normal; i++)
-        {
-            inputBoxes[i] = GameObject.Find($"Box{i}");
-        }
-
         introText = GameObject.Find("IntroMessage").GetComponent<TMP_Text>();
         gameText = GameObject.Find("InfoMessage").GetComponent<TMP_Text>();
 
-        inputBox0 = GameObject.Find($"Box0");
+        fireworkSystem.Stop();
+
+        /*inputBox0 = GameObject.Find($"Box0");
         inputBox1 = GameObject.Find($"Box1");
         inputBox2 = GameObject.Find($"Box2");
-        inputBox3 = GameObject.Find($"Box3");
+        inputBox3 = GameObject.Find($"Box3");*/
     }
 
     // Update is called once per frame
@@ -65,8 +67,7 @@ public class GameManager : MonoBehaviour
     {
         startGame();
         enterKeys();
- 
-       
+        gameStatus();
     }
 
     void startGame()
@@ -79,7 +80,14 @@ public class GameManager : MonoBehaviour
 
             introText.enabled = false;
 
-            keyOptionsPanel.transform.position = new Vector2((inputBoxes[1].transform.position.x + inputBoxes[2].transform.position.x) / 2, keyOptionsPanel.transform.position.y); 
+            for (i = 0; i < Constants.Normal; i++)
+            {
+                inputBoxes[i] = GameObject.Find($"Box{i}");
+            }
+
+            attempts = 0;
+
+            keyOptionsPanel.transform.position = new Vector2((inputBoxes[0].transform.position.x), keyOptionsPanel.transform.position.y); 
 
             keyOptionsPanel.SetActive(true);
 
@@ -101,7 +109,7 @@ public class GameManager : MonoBehaviour
                 numDifColors.Add(-1); // -1 is just a filler to make sure the list size is the same size as the box amounts
             }
 
-            print("Your color key is: " + colorKey[0] + colorKey[1] + colorKey[2] + colorKey[3]);
+            //print("Your color key is: " + colorKey[0] + colorKey[1] + colorKey[2] + colorKey[3]);
         }
     }
 
@@ -110,9 +118,11 @@ public class GameManager : MonoBehaviour
         int i;
         int j;
 
+        attempts++;
+
         int[] initialKey = new int[4];
 
-        if (gameAlive && inputBox0.GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial && inputBox1.GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial && inputBox2.GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial && inputBox3.GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial)
+        if (gameAlive && inputBoxes[0].GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial && inputBoxes[1].GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial && inputBoxes[2].GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial && inputBoxes[3].GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial)
         {
             print("User key is: " + userKey[0] + userKey[1] + userKey[2] + userKey[3]);
 
@@ -182,14 +192,6 @@ public class GameManager : MonoBehaviour
 
             StartCoroutine(displayText());
 
-            if (numCorrectOrder == numToWin)
-            {
-                gameAlive = false;
-                gameWon = true;
-
-                gameText.text = $"You Won!";
-            }
-
             for (i = 0; i < colorKey.Length; i++)
             {
                 initialKey[i] = colorKey[i];
@@ -199,8 +201,37 @@ public class GameManager : MonoBehaviour
 
     IEnumerator displayText()
     {
+
+        if(numCorrectColor == 0)
+        {
+            gameText.color = Color.red;
+        }
+        else
+        {
+            gameText.color = Color.green;
+        }
+
+        if(!gameAlive)
+        {
+            yield return new WaitForSecondsRealtime(3);
+        }
+
         gameText.text = $"Number of colors correct: {numCorrectColor}";
         yield return new WaitForSecondsRealtime(3);
+
+        if(numCorrectOrder == 0)
+        {
+            gameText.color = Color.red;
+        }
+        else if(numCorrectOrder == 1)
+        {
+            gameText.color = Color.yellow;
+        }
+        else
+        {
+            gameText.color = Color.green;
+        }
+
         gameText.text = $"Number of colors in correct order: {numCorrectOrder}";
         yield return new WaitForSecondsRealtime(3);
 
@@ -211,4 +242,29 @@ public class GameManager : MonoBehaviour
     {
         userKey[boxNumberEnterring] = colorKeyNumberEnterring;
     }  
+
+    public void restart(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
+    }
+
+    private void gameStatus()
+    {
+        if (gameAlive && attempts > attemptsAllowed)
+        {
+            gameAlive = false;
+            restartButton.SetActive(true);
+        }
+
+        if (gameAlive && numCorrectOrder == numToWin && attempts <= attemptsAllowed)
+        {
+            gameAlive = false;
+            gameWon = true;
+
+            fireworkSystem.Play();
+
+            gameText.text = $"You Won!";
+            restartButton.SetActive(true);
+        }
+    }
 }

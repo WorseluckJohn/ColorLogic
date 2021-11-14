@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 static class Constants
 {
@@ -34,7 +35,11 @@ public class GameManager : MonoBehaviour
     public TMP_Text introText;
     public TMP_Text gameText;
 
-    public ParticleSystem fireworkSystem;
+    public ParticleSystem fireworkParticles; // Particle system to trigger when player wins
+    public ParticleSystem rainParticles; // Particle system to trigger when player gets above the amount of attempts allowed
+
+    public AudioSource buttonSound;
+    public AudioSource backgroundMusic;
 
     /*GameObject inputBox0;
     GameObject inputBox1;
@@ -54,7 +59,8 @@ public class GameManager : MonoBehaviour
         introText = GameObject.Find("IntroMessage").GetComponent<TMP_Text>();
         gameText = GameObject.Find("InfoMessage").GetComponent<TMP_Text>();
 
-        fireworkSystem.Stop();
+        fireworkParticles.Stop();
+        rainParticles.Stop();
 
         /*inputBox0 = GameObject.Find($"Box0");
         inputBox1 = GameObject.Find($"Box1");
@@ -117,6 +123,8 @@ public class GameManager : MonoBehaviour
     {
         int i;
         int j;
+
+        //buttonSound.Play();
 
         attempts++;
 
@@ -216,8 +224,17 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSecondsRealtime(3);
         }
 
-        gameText.text = $"Number of colors correct: {numCorrectColor}";
-        yield return new WaitForSecondsRealtime(3);
+        if(numCorrectColor == numDifColors.Count)
+        {
+            gameText.text = $"You found all the colors!";
+            yield return new WaitForSecondsRealtime(3);
+        }
+        else
+        {
+            gameText.text = $"Number of colors correct: {numCorrectColor}";
+            yield return new WaitForSecondsRealtime(3);
+        }
+        
 
         if(numCorrectOrder == 0)
         {
@@ -254,6 +271,10 @@ public class GameManager : MonoBehaviour
         {
             gameAlive = false;
             restartButton.SetActive(true);
+
+            gameText.color = Color.red;
+            gameText.text = "Game Over!";
+            //rainParticles.Play();
         }
 
         if (gameAlive && numCorrectOrder == numToWin && attempts <= attemptsAllowed)
@@ -261,8 +282,9 @@ public class GameManager : MonoBehaviour
             gameAlive = false;
             gameWon = true;
 
-            fireworkSystem.Play();
+            fireworkParticles.Play();
 
+            gameText.color = Color.green;
             gameText.text = $"You Won!";
             restartButton.SetActive(true);
         }

@@ -7395,7 +7395,10 @@ MonoBehaviour:
   attemptsAllowed: 5
   introText: {fileID: 0}
   gameText: {fileID: 0}
-  fireworkSystem: {fileID: 1803220633}
+  fireworkParticles: {fileID: 1803220633}
+  rainParticles: {fileID: 0}
+  buttonSound: {fileID: 0}
+  backgroundMusic: {fileID: 0}
   answerHistory: {fileID: 0}
 --- !u!4 &1982287378
 Transform:

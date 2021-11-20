@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using System.Linq;
 using TMPro;
 using UnityEngine.SceneManagement;
-using UnityEngine.Audio;
 
 static class Constants
 {
@@ -32,20 +31,13 @@ public class GameManager : MonoBehaviour
     public GameObject restartButton;
     public int attemptsAllowed = 5; // Attempts allowed by user
 
+    [SerializeField] float runTime = 0;
+    // GameObject runTimer;
+
     public TMP_Text introText;
     public TMP_Text gameText;
 
-    public ParticleSystem fireworkParticles; // Particle system to trigger when player wins
-    public ParticleSystem rainParticles; // Particle system to trigger when player gets above the amount of attempts allowed
-
-    public AudioSource buttonSound;
-    public AudioSource backgroundMusic;
-
-    /*GameObject inputBox0;
-    GameObject inputBox1;
-    GameObject inputBox2;
-    GameObject inputBox3;
-    */
+    public ParticleSystem fireworkSystem;
 
     private GameObject[] inputBoxesHistory = new GameObject[4];
     private GameObject[] inputBoxes = new GameObject[4];
@@ -59,13 +51,9 @@ public class GameManager : MonoBehaviour
         introText = GameObject.Find("IntroMessage").GetComponent<TMP_Text>();
         gameText = GameObject.Find("InfoMessage").GetComponent<TMP_Text>();
 
-        fireworkParticles.Stop();
-        rainParticles.Stop();
+        // runTimer = GameObject.Find("RunTimer");
 
-        /*inputBox0 = GameObject.Find($"Box0");
-        inputBox1 = GameObject.Find($"Box1");
-        inputBox2 = GameObject.Find($"Box2");
-        inputBox3 = GameObject.Find($"Box3");*/
+        fireworkSystem.Stop();
     }
 
     // Update is called once per frame
@@ -74,6 +62,8 @@ public class GameManager : MonoBehaviour
         startGame();
         enterKeys();
         gameStatus();
+
+        // runTimer.GetComponent<TMP_Text>().text = $"Timer: {runTime:0.00}"; 
     }
 
     void startGame()
@@ -123,16 +113,24 @@ public class GameManager : MonoBehaviour
     {
         int i;
         int j;
-
-        //buttonSound.Play();
+        int countBox = 0;
 
         attempts++;
 
         int[] initialKey = new int[4];
 
-        if (gameAlive && inputBoxes[0].GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial && inputBoxes[1].GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial && inputBoxes[2].GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial && inputBoxes[3].GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial)
+        foreach (GameObject box in inputBoxes)
         {
-            print("User key is: " + userKey[0] + userKey[1] + userKey[2] + userKey[3]);
+            if (box.GetComponent<SpriteRenderer>().sharedMaterial != blankMaterial)
+            {
+                countBox++;
+            }
+        }
+
+        if (gameAlive && countBox == Constants.Normal)
+        {
+
+            //print("User key is: " + userKey[0] + userKey[1] + userKey[2] + userKey[3]);
 
             numCorrectColor = 0;
             numCorrectOrder = 0;
@@ -219,22 +217,34 @@ public class GameManager : MonoBehaviour
             gameText.color = Color.green;
         }
 
-        if(!gameAlive)
+        if (gameAlive && attempts > attemptsAllowed)
+        {
+            gameAlive = false;
+            gameText.color = Color.red;
+            gameText.text = $"Game Over!";
+            restartButton.SetActive(true);
+            yield return new WaitForSecondsRealtime(3);
+        }
+
+        if (gameAlive && numCorrectOrder == numToWin && attempts <= attemptsAllowed)
+        {
+            gameAlive = false;
+            gameWon = true;
+
+            fireworkSystem.Play();
+
+            gameText.text = $"You Won!";
+            restartButton.SetActive(true);
+            yield return new WaitForSecondsRealtime(3);
+        }
+
+        if (!gameAlive)
         {
             yield return new WaitForSecondsRealtime(3);
         }
 
-        if(numCorrectColor == numDifColors.Count)
-        {
-            gameText.text = $"You found all the colors!";
-            yield return new WaitForSecondsRealtime(3);
-        }
-        else
-        {
-            gameText.text = $"Number of colors correct: {numCorrectColor}";
-            yield return new WaitForSecondsRealtime(3);
-        }
-        
+        gameText.text = $"Number of colors correct: {numCorrectColor}";
+        yield return new WaitForSecondsRealtime(3);
 
         if(numCorrectOrder == 0)
         {
@@ -255,6 +265,11 @@ public class GameManager : MonoBehaviour
         gameText.text = "";
     }
 
+    void timeFromStart()
+    {
+        runTime += Time.deltaTime;
+    }
+
     void enterKeys()
     {
         userKey[boxNumberEnterring] = colorKeyNumberEnterring;
@@ -267,26 +282,6 @@ public class GameManager : MonoBehaviour
 
     private void gameStatus()
     {
-        if (gameAlive && attempts > attemptsAllowed)
-        {
-            gameAlive = false;
-            restartButton.SetActive(true);
 
-            gameText.color = Color.red;
-            gameText.text = "Game Over!";
-            //rainParticles.Play();
-        }
-
-        if (gameAlive && numCorrectOrder == numToWin && attempts <= attemptsAllowed)
-        {
-            gameAlive = false;
-            gameWon = true;
-
-            fireworkParticles.Play();
-
-            gameText.color = Color.green;
-            gameText.text = $"You Won!";
-            restartButton.SetActive(true);
-        }
     }
 }

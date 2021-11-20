@@ -7038,8 +7038,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1813772727}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.3375, y: 1.1, z: 1}
+  m_LocalPosition: {x: 0.0259, y: -0, z: 0}
+  m_LocalScale: {x: 1.3448639, y: 1.1163536, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 7
@@ -7395,10 +7395,7 @@ MonoBehaviour:
   attemptsAllowed: 5
   introText: {fileID: 0}
   gameText: {fileID: 0}
-  fireworkParticles: {fileID: 1803220633}
-  rainParticles: {fileID: 0}
-  buttonSound: {fileID: 0}
-  backgroundMusic: {fileID: 0}
+  fireworkSystem: {fileID: 1803220633}
   answerHistory: {fileID: 0}
 --- !u!4 &1982287378
 Transform:

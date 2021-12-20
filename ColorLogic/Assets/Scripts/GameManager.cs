@@ -14,8 +14,8 @@ static class Constants
 public class GameManager : MonoBehaviour
 {
     public bool gameAlive = false; // Is the game currently running
-    public int[] colorKey = new int[4]; // Key to win the game
-    public int[] userKey = new int[4]; // Key the player is guessing
+    public int[] colorKey = new int[Constants.Normal]; // Key to win the game
+    public int[] userKey = new int[Constants.Normal]; // Key the player is guessing
     public int numCorrectColor; // Number of colors guesses correctly that are currently inside of the key
     public int numCorrectOrder; // Number of colors guesses that are both the same color and the right position
     private int numToWin = Constants.Normal;

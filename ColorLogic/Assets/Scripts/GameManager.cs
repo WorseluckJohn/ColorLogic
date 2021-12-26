@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 
 static class Constants
 {
@@ -31,9 +32,6 @@ public class GameManager : MonoBehaviour
     public GameObject restartButton;
     public int attemptsAllowed = 5; // Attempts allowed by user
 
-    [SerializeField] float runTime = 0;
-    // GameObject runTimer;
-
     public TMP_Text introText;
     public TMP_Text gameText;
 
@@ -44,7 +42,10 @@ public class GameManager : MonoBehaviour
 
     private GameObject[] answerPanelHistory;
     public GameObject answerHistory;
-    
+
+    public GameObject blackPeg;
+    public GameObject whitePeg;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -61,7 +62,6 @@ public class GameManager : MonoBehaviour
     {
         startGame();
         enterKeys();
-        gameStatus();
 
         // runTimer.GetComponent<TMP_Text>().text = $"Timer: {runTime:0.00}"; 
     }
@@ -265,11 +265,6 @@ public class GameManager : MonoBehaviour
         gameText.text = "";
     }
 
-    void timeFromStart()
-    {
-        runTime += Time.deltaTime;
-    }
-
     void enterKeys()
     {
         userKey[boxNumberEnterring] = colorKeyNumberEnterring;
@@ -280,8 +275,25 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
-    private void gameStatus()
+    void updatePegs()
     {
+        float tempX;
+        float tempY;
 
+        for(int i = 0; i < numCorrectOrder; i++)
+        {
+            if(i % 2 != 0)
+            {
+                tempX = .5f;
+            }
+            else
+            {
+                tempX = 0;
+            }
+
+            //if
+
+            //Instantiate(blackPeg, new Vector2(blackPeg.transform.position.x + tempX, blackPeg.transform.position.y + tempY), blackPeg.transform.rotation);
+        }
     }
 }

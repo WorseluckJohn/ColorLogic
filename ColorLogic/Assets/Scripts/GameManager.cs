@@ -27,7 +27,8 @@ public class GameManager : MonoBehaviour
     public int colorKeyNumberEnterring; // Number of the color user is inputting into blank box
     public Material blankMaterial;
     public List<int> numDifColors = new List<int>(); // Number of different colors inside original key
-    public List<int> correctUniqueColor= new List<int>();
+    public List<int> correctUniqueColor = new List<int>();
+    private List<GameObject> pegs = new List<GameObject>();
     public int attempts; // Number of attempts done by the user
     public GameObject restartButton;
     public int attemptsAllowed = 5; // Attempts allowed by user
@@ -70,7 +71,7 @@ public class GameManager : MonoBehaviour
     {
         int i;
 
-        if(Input.anyKeyDown && !gameAlive)
+        if (Input.anyKeyDown && !gameAlive)
         {
             gameAlive = true;
 
@@ -83,7 +84,7 @@ public class GameManager : MonoBehaviour
 
             attempts = 0;
 
-            keyOptionsPanel.transform.position = new Vector2((inputBoxes[0].transform.position.x), keyOptionsPanel.transform.position.y); 
+            keyOptionsPanel.transform.position = new Vector2((inputBoxes[0].transform.position.x), keyOptionsPanel.transform.position.y);
 
             keyOptionsPanel.SetActive(true);
 
@@ -94,7 +95,7 @@ public class GameManager : MonoBehaviour
 
             for (i = 0; i < colorKey.Length; ++i)
             {
-                if(!numDifColors.Contains(colorKey[i]))
+                if (!numDifColors.Contains(colorKey[i]))
                 {
                     numDifColors.Add(colorKey[i]);
                 }
@@ -135,9 +136,9 @@ public class GameManager : MonoBehaviour
             numCorrectColor = 0;
             numCorrectOrder = 0;
 
-            for(i = 0; i < colorKey.Length; i++)
+            for (i = 0; i < colorKey.Length; i++)
             {
-               initialKey[i] = colorKey[i];
+                initialKey[i] = colorKey[i];
             }
 
             for (j = 0; j < colorKey.Length; j++) // Checking if these colors are in correct place
@@ -154,18 +155,18 @@ public class GameManager : MonoBehaviour
                 {
                     correctUniqueColor.Add(userKey[i]);
                 }
-            }    
+            }
 
             IEnumerable<int> res = numDifColors.AsQueryable().Intersect(correctUniqueColor);
 
-            foreach(int a in res)
+            foreach (int a in res)
             {
                 numCorrectColor++;
             }
 
             correctUniqueColor.Clear();
 
-            while (numCorrectColor> numDifColors.Count)
+            while (numCorrectColor > numDifColors.Count)
             {
                 numCorrectColor--;
             }
@@ -176,7 +177,7 @@ public class GameManager : MonoBehaviour
             {
                 historyPanel.transform.Translate(0, 1.5f, 0);
 
-                if(historyPanel.transform.position.y >= 4.75)
+                if (historyPanel.transform.position.y >= 4.75)
                 {
                     Destroy(historyPanel);
                 }
@@ -196,6 +197,19 @@ public class GameManager : MonoBehaviour
                 inputBoxes[i].GetComponent<SpriteRenderer>().material = blankMaterial;
             }
 
+            foreach(GameObject peg in GameObject.FindGameObjectsWithTag("Peg"))
+            {
+                peg.transform.Translate(0, 1.5f, 0);
+
+                if(peg.transform.position.y >= 4.75)
+                {
+                    Destroy(peg);
+                }
+            }
+
+            updateBlackPegs();
+            updateWhitePegs();
+
             StartCoroutine(displayText());
 
             for (i = 0; i < colorKey.Length; i++)
@@ -208,7 +222,7 @@ public class GameManager : MonoBehaviour
     IEnumerator displayText()
     {
 
-        if(numCorrectColor == 0)
+        if (numCorrectColor == 0)
         {
             gameText.color = Color.red;
         }
@@ -246,11 +260,11 @@ public class GameManager : MonoBehaviour
         gameText.text = $"Number of colors correct: {numCorrectColor}";
         yield return new WaitForSecondsRealtime(3);
 
-        if(numCorrectOrder == 0)
+        if (numCorrectOrder == 0)
         {
             gameText.color = Color.red;
         }
-        else if(numCorrectOrder == 1)
+        else if (numCorrectOrder == 1)
         {
             gameText.color = Color.yellow;
         }
@@ -268,21 +282,52 @@ public class GameManager : MonoBehaviour
     void enterKeys()
     {
         userKey[boxNumberEnterring] = colorKeyNumberEnterring;
-    }  
+    }
 
     public void restart(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
     }
 
-    void updatePegs()
+    void updateBlackPegs()
     {
         float tempX;
         float tempY;
 
-        for(int i = 0; i < numCorrectOrder; i++)
+        for (int i = 0; i < numCorrectColor; i++)
         {
-            if(i % 2 != 0)
+            if (i % 2 != 0)
+            {
+                tempX = -.5f;
+            }
+            else
+            {
+                tempX = 0;
+            }
+
+            if (i > 1)
+            {
+                tempY = .5f;
+            }
+            else
+            {
+                tempY = 0;
+            }
+
+            Instantiate(blackPeg, new Vector2(blackPeg.transform.position.x + tempX, blackPeg.transform.position.y + tempY), blackPeg.transform.rotation);
+        }
+
+
+    }
+
+    void updateWhitePegs()
+    {
+        float tempX;
+        float tempY;
+
+        for (int i = 0; i < numCorrectOrder; i++)
+        {
+            if (i % 2 != 0)
             {
                 tempX = .5f;
             }
@@ -291,9 +336,16 @@ public class GameManager : MonoBehaviour
                 tempX = 0;
             }
 
-            //if
+            if (i > 1)
+            {
+                tempY = .5f;
+            }
+            else
+            {
+                tempY = 0;
+            }
 
-            //Instantiate(blackPeg, new Vector2(blackPeg.transform.position.x + tempX, blackPeg.transform.position.y + tempY), blackPeg.transform.rotation);
+            Instantiate(whitePeg, new Vector2(whitePeg.transform.position.x + tempX, whitePeg.transform.position.y + tempY), whitePeg.transform.rotation);
         }
     }
 }

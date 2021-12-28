@@ -139,7 +139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &55807165
 Transform:
   m_ObjectHideFlags: 0
@@ -762,7 +762,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &584318313
 Transform:
   m_ObjectHideFlags: 0
@@ -977,7 +977,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &711115863
 Transform:
   m_ObjectHideFlags: 0
@@ -1327,7 +1327,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &946602022
 Transform:
   m_ObjectHideFlags: 0
@@ -1742,7 +1742,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1194818667
 Transform:
   m_ObjectHideFlags: 0
@@ -2289,7 +2289,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1610800582
 Transform:
   m_ObjectHideFlags: 0
@@ -8597,6 +8597,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WhitePeg
       objectReference: {fileID: 0}
+    - target: {fileID: 1778211341467500509, guid: fa27793e5f6a9794288dc93f8fadf399, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fa27793e5f6a9794288dc93f8fadf399, type: 3}
 --- !u!1001 &7019533100876428861
@@ -8609,6 +8613,10 @@ PrefabInstance:
     - target: {fileID: 7019533101162359656, guid: 681deafa3fffc724eaaf8b732304f4b9, type: 3}
       propertyPath: m_Name
       value: BlackPeg
+      objectReference: {fileID: 0}
+    - target: {fileID: 7019533101162359656, guid: 681deafa3fffc724eaaf8b732304f4b9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7019533101162359658, guid: 681deafa3fffc724eaaf8b732304f4b9, type: 3}
       propertyPath: m_RootOrder

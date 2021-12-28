@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7019533101162359659}
   m_Layer: 0
   m_Name: BlackPeg
-  m_TagString: Untagged
+  m_TagString: Peg
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

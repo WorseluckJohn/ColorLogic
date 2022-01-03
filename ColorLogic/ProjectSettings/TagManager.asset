@@ -9,6 +9,7 @@ TagManager:
   - Box2
   - Box3
   - HistoryPanel
+  - Peg
   layers:
   - Default
   - TransparentFX

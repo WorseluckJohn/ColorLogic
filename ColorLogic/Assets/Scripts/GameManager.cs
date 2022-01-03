@@ -10,51 +10,56 @@ using UnityEngine.Tilemaps;
 static class Constants
 {
     public const int Normal = 4;
+    public const int scorePerOrder = 5000;
+    public const int scorePerColor = 1000;
 }
 
 public class GameManager : MonoBehaviour
 {
     public bool gameAlive = false; // Is the game currently running
     public int[] colorKey = new int[Constants.Normal]; // Key to win the game
-    public int[] userKey = new int[Constants.Normal]; // Key the player is guessing
+    private int[] userKey = new int[Constants.Normal]; // Key the player is guessing
     public int numCorrectColor; // Number of colors guesses correctly that are currently inside of the key
     public int numCorrectOrder; // Number of colors guesses that are both the same color and the right position
-    private int numToWin = Constants.Normal;
-    public bool gameWon;
-    public double posKeyInput;
-    public GameObject keyOptionsPanel;
+    public int numToWin = Constants.Normal; // Number of colors needed to get correct in correct order to win
+    public bool gameWon; // Bool for if player has won the game
+    public double posKeyInput; // Position of key answer panel input
+    public GameObject keyOptionsPanel; // Key option gameobject
     public int boxNumberEnterring; // Number of the blank box user is inputting into
     public int colorKeyNumberEnterring; // Number of the color user is inputting into blank box
-    public Material blankMaterial;
+    public Material blankMaterial; // Blank material for key input
     public List<int> numDifColors = new List<int>(); // Number of different colors inside original key
-    public List<int> correctUniqueColor = new List<int>();
-    private List<GameObject> pegs = new List<GameObject>();
+    public List<int> correctUniqueColor = new List<int>(); // List of correct unique colors
+    private List<GameObject> pegs = new List<GameObject>(); // List of pegs in game
     public int attempts; // Number of attempts done by the user
-    public GameObject restartButton;
+    public GameObject restartButton; // Restart button for game
     public int attemptsAllowed = 5; // Attempts allowed by user
+    private ScoreScript score;
 
-    public TMP_Text introText;
-    public TMP_Text gameText;
+    public TMP_Text introText; // Intro text for the game
+    public TMP_Text gameText; // Game feedback text
 
-    public ParticleSystem fireworkSystem;
+    public ParticleSystem fireworkSystem; // Firework particle system
 
-    private GameObject[] inputBoxesHistory = new GameObject[4];
-    private GameObject[] inputBoxes = new GameObject[4];
+    private GameObject[] inputBoxesHistory = new GameObject[Constants.Normal]; // Array for history of answers given
+    private GameObject[] inputBoxes = new GameObject[Constants.Normal]; // Specific history of answer given
 
-    private GameObject[] answerPanelHistory;
-    public GameObject answerHistory;
+    private GameObject[] answerPanelHistory; // History for answer panel for the key inputs
+    public GameObject answerHistory; // Parent object holding all of the answers
 
-    public GameObject blackPeg;
-    public GameObject whitePeg;
+    public GameObject blackPeg; // Black pegs used to represent the number of colors in correct order
+    public GameObject whitePeg; // White pegs used to represent the number of colors guessed correctly
+
+    public bool sameAttempt = false; // Boolean to check if current attempt is the same as the previous one
+    int[] prevKey;
 
     // Start is called before the first frame update
     void Start()
     {
         introText = GameObject.Find("IntroMessage").GetComponent<TMP_Text>();
         gameText = GameObject.Find("InfoMessage").GetComponent<TMP_Text>();
-
-        // runTimer = GameObject.Find("RunTimer");
-
+        score = GameObject.Find("Score").GetComponent<ScoreScript>();
+   
         fireworkSystem.Stop();
     }
 
@@ -63,8 +68,6 @@ public class GameManager : MonoBehaviour
     {
         startGame();
         enterKeys();
-
-        // runTimer.GetComponent<TMP_Text>().text = $"Timer: {runTime:0.00}"; 
     }
 
     void startGame()
@@ -90,7 +93,7 @@ public class GameManager : MonoBehaviour
 
             for (i = 0; i < colorKey.Length; i++)
             {
-                colorKey[i] = Random.Range(0, 4); // Every number will represent a color
+                colorKey[i] = Random.Range(0, Constants.Normal); // Every number will represent a color
             }
 
             for (i = 0; i < colorKey.Length; ++i)
@@ -116,9 +119,16 @@ public class GameManager : MonoBehaviour
         int j;
         int countBox = 0;
 
+        int[] initialKey = new int[Constants.Normal];
+        
+
         attempts++;
 
-        int[] initialKey = new int[4];
+        if(attempts != 1)
+        {
+            sameAttempt = prevKey.SequenceEqual(userKey);
+        }
+
 
         foreach (GameObject box in inputBoxes)
         {
@@ -130,7 +140,6 @@ public class GameManager : MonoBehaviour
 
         if (gameAlive && countBox == Constants.Normal)
         {
-
             //print("User key is: " + userKey[0] + userKey[1] + userKey[2] + userKey[3]);
 
             numCorrectColor = 0;
@@ -197,11 +206,11 @@ public class GameManager : MonoBehaviour
                 inputBoxes[i].GetComponent<SpriteRenderer>().material = blankMaterial;
             }
 
-            foreach(GameObject peg in GameObject.FindGameObjectsWithTag("Peg"))
+            foreach (GameObject peg in GameObject.FindGameObjectsWithTag("Peg"))
             {
                 peg.transform.Translate(0, 1.5f, 0);
 
-                if(peg.transform.position.y >= 4.75)
+                if (peg.transform.position.y >= 4.75)
                 {
                     Destroy(peg);
                 }
@@ -209,13 +218,15 @@ public class GameManager : MonoBehaviour
 
             updateBlackPegs();
             updateWhitePegs();
-
+            score.updateScore();
             StartCoroutine(displayText());
 
             for (i = 0; i < colorKey.Length; i++)
             {
                 initialKey[i] = colorKey[i];
             }
+
+            prevKey = userKey;
         }
     }
 

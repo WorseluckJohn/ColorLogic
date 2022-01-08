@@ -12,6 +12,7 @@ static class Constants
     public const int Normal = 4;
     public const int scorePerOrder = 5000;
     public const int scorePerColor = 1000;
+    public const int starNum = 3;
 }
 
 public class GameManager : MonoBehaviour
@@ -51,7 +52,7 @@ public class GameManager : MonoBehaviour
     public GameObject whitePeg; // White pegs used to represent the number of colors guessed correctly
 
     public bool sameAttempt = false; // Boolean to check if current attempt is the same as the previous one
-    int[] prevKey;
+    private int[] prevKey;
 
     // Start is called before the first frame update
     void Start()
@@ -59,7 +60,7 @@ public class GameManager : MonoBehaviour
         introText = GameObject.Find("IntroMessage").GetComponent<TMP_Text>();
         gameText = GameObject.Find("InfoMessage").GetComponent<TMP_Text>();
         score = GameObject.Find("Score").GetComponent<ScoreScript>();
-   
+
         fireworkSystem.Stop();
     }
 
@@ -121,14 +122,12 @@ public class GameManager : MonoBehaviour
 
         int[] initialKey = new int[Constants.Normal];
         
-
         attempts++;
 
         if(attempts != 1)
         {
             sameAttempt = prevKey.SequenceEqual(userKey);
         }
-
 
         foreach (GameObject box in inputBoxes)
         {
@@ -232,7 +231,6 @@ public class GameManager : MonoBehaviour
 
     IEnumerator displayText()
     {
-
         if (numCorrectColor == 0)
         {
             gameText.color = Color.red;
@@ -242,23 +240,22 @@ public class GameManager : MonoBehaviour
             gameText.color = Color.green;
         }
 
-        if (gameAlive && attempts > attemptsAllowed)
-        {
-            gameAlive = false;
-            gameText.color = Color.red;
-            gameText.text = $"Game Over!";
-            restartButton.SetActive(true);
-            yield return new WaitForSecondsRealtime(3);
-        }
-
         if (gameAlive && numCorrectOrder == numToWin && attempts <= attemptsAllowed)
         {
             gameAlive = false;
             gameWon = true;
 
             fireworkSystem.Play();
-
             gameText.text = $"You Won!";
+            restartButton.SetActive(true);
+            yield return new WaitForSecondsRealtime(3);
+        }
+
+        if (gameAlive && attempts > attemptsAllowed)
+        {
+            gameAlive = false;
+            gameText.color = Color.red;
+            gameText.text = $"Game Over!";
             restartButton.SetActive(true);
             yield return new WaitForSecondsRealtime(3);
         }
@@ -293,11 +290,6 @@ public class GameManager : MonoBehaviour
     void enterKeys()
     {
         userKey[boxNumberEnterring] = colorKeyNumberEnterring;
-    }
-
-    public void restart(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName);
     }
 
     void updateBlackPegs()

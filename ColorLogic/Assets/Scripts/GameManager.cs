@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
     private List<GameObject> pegs = new List<GameObject>(); // List of pegs in game
     public int attempts; // Number of attempts done by the user
     public GameObject restartButton; // Restart button for game
+    public GameObject nextLvlButton; // Button to proceed to the next level
     public int attemptsAllowed = 5; // Attempts allowed by user
     private ScoreScript score;
 
@@ -248,6 +249,7 @@ public class GameManager : MonoBehaviour
             fireworkSystem.Play();
             gameText.text = $"You Won!";
             restartButton.SetActive(true);
+            nextLvlButton.SetActive(true);
             yield return new WaitForSecondsRealtime(3);
         }
 

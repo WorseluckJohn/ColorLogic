@@ -12,6 +12,7 @@ public class ScoreScript : MonoBehaviour
     private TimeScript timer;
     public int score = 0;
     public TMP_Text scoreText;
+    public TMP_Text hsText; // High score text
     public int attemptScore;
     public GameObject[] stars;
     public int[] starLimits = new int[Constants.starNum];
@@ -28,6 +29,7 @@ public class ScoreScript : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         timer = GameObject.Find("Time").GetComponent<TimeScript>();
         scoreText = gameObject.GetComponent<TMP_Text>();
+        hsText = GameObject.Find("HighScore").GetComponent<TMP_Text>();
 
         InvokeRepeating("decreaseScore", 1f, 1f);
         
@@ -40,7 +42,7 @@ public class ScoreScript : MonoBehaviour
         saveHighScore();
         //giveStars();
     }
-
+    
     public void updateScore()
     {
         if(gameManager.sameAttempt == false) // Checking if current attempt is the same attempt as the previous one
@@ -48,7 +50,7 @@ public class ScoreScript : MonoBehaviour
             attemptScore = Constants.Normal / (gameManager.numDifColors.Count + 1 - gameManager.numCorrectColor) * 2500;
             attemptScore += gameManager.numCorrectOrder * 2500;
             attemptScore /= gameManager.attempts;
-
+            
             score += attemptScore;
         }
 
@@ -86,6 +88,8 @@ public class ScoreScript : MonoBehaviour
                     stars[i].gameObject.GetComponent<SpriteRenderer>().color = Color.yellow;
                 }
             }
+
+            hsText.SetText($"{highScore}");
         }
     }
 }
